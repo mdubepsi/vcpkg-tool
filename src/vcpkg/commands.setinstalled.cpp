@@ -64,6 +64,7 @@ namespace vcpkg::Commands::SetInstalled
         }
 
         // currently (or once) installed specifications
+        const auto triplet(Triplet::from_canonical_name(*args.triplet));
         auto status_db = database_load_check(fs, paths.installed());
         std::vector<PackageSpec> specs_to_remove;
         std::set<PackageSpec> specs_installed;
@@ -71,6 +72,7 @@ namespace vcpkg::Commands::SetInstalled
         {
             if (!status_pgh->is_installed()) continue;
             if (status_pgh->package.is_feature()) continue;
+            if (status_pgh->package.spec.triplet() != triplet) continue;
 
             const auto& abi = status_pgh->package.abi;
             if (abi.empty() || !Util::Sets::contains(all_abis, abi))
